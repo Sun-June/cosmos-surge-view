@@ -1,0 +1,13 @@
+.ant-progress {
+    line-height: 0.5;
+    margin-bottom: 2px;
+}
+
+.ant-progress-status-active .ant-progress-bg::before{
+    animation: ant-progress-active 0.7s cubic-bezier(0.5, 1, 0.5, 1) infinite;
+    background-color: white;
+}
+
+/*.site-layout-background {*/
+/*    height: calc(100% - 200px)*/
+/*}*/
