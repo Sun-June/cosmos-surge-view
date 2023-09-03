@@ -53,7 +53,7 @@ class BaseRequest {
     return data.data as T
   }
 
-  async delete<T>(url: string, params: {}): Promise<T> {
+  async delete<T>(url: string, params: any): Promise<T> {
     const response = await this.instance.delete(url, {params})
     const data = response.data as {success:boolean, data: any, error: any}
     return data.data as T

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
-import {Layout, Menu, Button, Affix, Tabs, Modal, Result} from 'antd';
+import {Layout, Menu, Button, Affix, Tabs, Modal, Result, Spin} from 'antd';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -47,7 +47,8 @@ interface AppState {
   menus: SubMenuType[],
   choiceConfig: ConfigLink
   tabItems: Tab[]
-  activeTab: string
+  activeTab: string,
+  loading: boolean
 }
 
 class App extends Component<any, AppState> {
@@ -67,7 +68,8 @@ class App extends Component<any, AppState> {
       menus: [],
       choiceConfig: {id: "", name: "", connectionString: ""},
       tabItems: [],
-      activeTab: ""
+      activeTab: "",
+      loading: false
     };
 
   }
@@ -137,8 +139,7 @@ class App extends Component<any, AppState> {
     });
   };
 
-  componentDidMount() {
-
+  initConfig = () => {
     RequestUtil.configApi.getConfigs().then(configs => {
       const newMenus:SubMenuType[] = []
       for (const [index,config] of configs.entries()) {
@@ -154,6 +155,29 @@ class App extends Component<any, AppState> {
       }
       this.setState({menus: newMenus})
     })
+  }
+
+  componentDidMount() {
+    const win = window as any
+    if (window.location.href.indexOf('http://') < 0 && !win.electron) { // load slow
+      console.warn("electron loading so slow, next to wait....")
+      this.setState({loading: true})
+      const reloadNext = () => {
+        setTimeout(() => {
+          if (!win.electron) {
+            console.warn("electron loading so slow, next to wait....")
+            reloadNext();
+          } else {
+            RequestUtil.reload();
+            this.setState({loading: false})
+            this.initConfig();
+          }
+        }, 200)
+      }
+      reloadNext()
+    } else {
+      this.initConfig();
+    }
 
   }
 
@@ -266,6 +290,7 @@ class App extends Component<any, AppState> {
 
     return (
         <div className="App">
+          <Spin spinning={this.state.loading} />
           <ConfigLinkEdit show={this.state.showEdit} setShow={this.setShowEdit}
                           config= {this.state.choiceConfig}
                           updateConfig={this.updateConfigFromEdit}

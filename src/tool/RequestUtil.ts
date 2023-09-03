@@ -7,13 +7,13 @@ import ImportTaskRequest from "../request/ImportTaskRequest.ts";
 
 class RequestUtil {
 
-    public static readonly configApi: ConfigLinkRequest = new ConfigLinkRequest(RequestNotification.singleton);
+    public static configApi: ConfigLinkRequest = new ConfigLinkRequest(RequestNotification.singleton);
 
-    public static readonly menuApi: MenuRequest = new MenuRequest(RequestNotification.singleton);
+    public static menuApi: MenuRequest = new MenuRequest(RequestNotification.singleton);
 
-    public static readonly taskApi: ImportTaskRequest = new ImportTaskRequest(RequestNotification.singleton)
+    public static taskApi: ImportTaskRequest = new ImportTaskRequest(RequestNotification.singleton)
 
-    private static readonly operationMap: Map<string, OperationRequest> = new Map<string, OperationRequest>();
+    private static operationMap: Map<string, OperationRequest> = new Map<string, OperationRequest>();
 
     public static getOperationApi(view: ContainerView): OperationRequest {
         let opApi = this.operationMap.get(view.id);
@@ -22,6 +22,13 @@ class RequestUtil {
             this.operationMap.set(view.id, opApi);
         }
         return opApi;
+    }
+
+    public static reload() {
+        this.configApi = new ConfigLinkRequest(RequestNotification.singleton);
+        this.menuApi = new MenuRequest(RequestNotification.singleton);
+        this.taskApi = new ImportTaskRequest(RequestNotification.singleton);
+        this.operationMap.clear();
     }
 
 }
