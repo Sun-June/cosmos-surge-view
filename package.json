@@ -1,7 +1,7 @@
 {
   "name": "cosmos-surge-view",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "SunJune",
     "email": "xjwssjun@gmail.com"
@@ -15,18 +15,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "antd": "^5.8.5",
-    "axios": "^1.5.0",
-    "dayjs": "^1.11.9",
+    "antd": "^5.9.4",
+    "axios": "^1.5.1",
+    "dayjs": "^1.11.10",
     "dexie": "^3.2.4",
-    "jsoneditor": "^9.10.2",
+    "jsoneditor": "^9.10.3",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-ace": "^10.1.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/jsoneditor": "^9.9.0",
+    "@types/jsoneditor": "^9.9.1",
     "@types/lodash": "^4.14.197",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",

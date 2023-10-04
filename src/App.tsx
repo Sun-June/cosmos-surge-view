@@ -242,6 +242,9 @@ class App extends Component<any, AppState> {
         this.containerMap.set(view.id, view);
         categoryMenu.children.push({key: view.id, label: view.name, onClick: info => this.choiceContainer(info.key)})
       }
+      if (categoryMenu.children.length > 5) {
+          categoryMenu.popupOffset = [0, -40]
+      }
       newMenu.children.push(categoryMenu);
     }
     newMenu.children = newMenu.children.concat(this.getFuncMenu(newMenu.key));
@@ -305,7 +308,7 @@ class App extends Component<any, AppState> {
                 <Button type="primary" block onClick={() => this.addConfig()} icon={<PlusOutlined />} >Add</Button>
 
               </Affix>
-              <Menu theme="light" mode="vertical" items={this.state.menus} >
+              <Menu theme="light" mode="vertical" items={this.state.menus} forceSubMenuRender >
               </Menu>
 
               <Affix className={this.state.collapsed ? "bottom-button" : "bottom-button-collapsed"} offsetBottom={10} >

@@ -1,5 +1,6 @@
 import { Component } from "react";
-import {Row, Col, Progress, Statistic, Tag, Card, Layout} from 'antd'
+import {Row, Col, Progress, Statistic, Tag, Card, Layout, Button, Popconfirm, Space} from 'antd'
+import { PlayCircleOutlined,PauseCircleOutlined, StopOutlined } from "@ant-design/icons";
 
 
 import ImportTask from "../../bean/ImportTask.ts";
@@ -7,6 +8,7 @@ import Sider from "antd/es/layout/Sider";
 import {Content} from "antd/es/layout/layout";
 import AceEditor from "react-ace";
 import dayjs from "dayjs";
+import RequestUtil from "../../tool/RequestUtil.ts";
 
 interface IProps {
     task: ImportTask,
@@ -15,7 +17,7 @@ interface IProps {
 }
 
 interface IData {
-
+    loading: boolean
 }
 
 export default class TaskProgress extends Component<IProps, IData> {
@@ -23,6 +25,7 @@ export default class TaskProgress extends Component<IProps, IData> {
     constructor(props:any) {
         super(props)
         this.state = {
+            loading: false
         }
     }
 
@@ -44,11 +47,57 @@ export default class TaskProgress extends Component<IProps, IData> {
         return ""
     }
 
+    changeStop = () => {
+        this.setState({loading: true})
+        RequestUtil.taskApi.stopTask(this.props.task).finally(() => {
+            setTimeout(() => {
+                this.setState({loading: false})
+            }, 1000)
+        })
+    }
+
+    cancel = () => {
+        this.setState({loading: true})
+        RequestUtil.taskApi.cancelTask(this.props.task).finally(() => {
+            setTimeout(() => {
+                this.setState({loading: false})
+            }, 1000)
+        })
+    }
+
+
     render() {
         return (
             <>
                 <Card size="small" title={this.props.task.name}
-                      extra={this.getDate(this.props.task.start)}
+                      extra={
+                          <Space>
+                              {
+                                  this.props.task.stop ? <Tag color="#108ee9">task paused...</Tag> : ""
+                              }
+                              {
+                                  this.props.task.cancel ? <Tag color="#f50">canceled</Tag> : ""
+                              }
+                              <Button disabled={this.props.task.status==="end"} type="primary"
+                                       icon={this.props.task.stop ? <PlayCircleOutlined /> : <PauseCircleOutlined /> }
+                                      loading={this.state.loading} onClick={this.changeStop} >
+                              </Button>
+                              <Popconfirm
+                                  title="Cancel the task"
+                                  description="Are you sure to cancel this task?"
+                                  onConfirm={this.cancel}
+                                  okText="Yes"
+                                  cancelText="No"
+                              >
+                                  <Button danger disabled={this.props.task.status==="end"}
+                                          icon={<StopOutlined />}
+                                          loading={this.state.loading}>
+                                  </Button>
+                              </Popconfirm>
+
+                              <Tag color="magenta">{this.getDate(this.props.task.start)}</Tag>
+                          </Space>
+                      }
                       style={{ width: "100%" }}>
                     <Layout hasSider style={{background: "#fff"}} >
                         <Sider  style={{background: "#fff"}} >

@@ -4,6 +4,7 @@ import ImportTask from "../../bean/ImportTask.ts";
 import {DefaultOptionType} from "rc-tree-select/lib/TreeSelect";
 import RequestUtil from "../../tool/RequestUtil.ts";
 import ContainerView from "../../bean/ContainerView.ts";
+import MenuInfo from "../../bean/MenuInfo.ts";
 
 
 const layout = {
@@ -18,7 +19,7 @@ interface IProps {
 interface IState {
     show: boolean
     saveLoading: boolean,
-    testLoading: boolean,
+    initLoading: boolean,
     task: ImportTask,
     treeData: DefaultOptionType[]
 }
@@ -33,7 +34,7 @@ export default class CreateTask extends Component<IProps, IState> {
         this.state = {
             show: false,
             saveLoading: false,
-            testLoading: false,
+            initLoading: false,
             treeData: [],
             task: {id: "", name: "", type: "upsert", sql: "", status: "init", fromId: "", toId: ""}
         }
@@ -59,10 +60,16 @@ export default class CreateTask extends Component<IProps, IState> {
     }
 
     initTreeData = async (linkIds: string[], skipId: string) => {
+        this.setState({initLoading: true})
         this.viewMap.clear()
         const treeData:DefaultOptionType[] = []
         for (const linkId of linkIds) {
-            const info = await RequestUtil.menuApi.getMenu(linkId)
+            let info: MenuInfo
+            try {
+                info = await RequestUtil.menuApi.getMenu(linkId)
+            } catch (e) {
+                continue;
+            }
             const node: DefaultOptionType = {title: info.name, value: info.id, children: [], selectable: false}
             for (const databaseId of info.databaseIds) {
                 const databaseNode: DefaultOptionType = {label: databaseId, value: info.id + databaseId, children: [], selectable: false}
@@ -83,7 +90,9 @@ export default class CreateTask extends Component<IProps, IState> {
                 treeData.push(node)
             }
         }
-        this.setState({treeData})
+        this.setState({treeData}, () => {
+            this.setState({initLoading: false})
+        })
     }
 
     formFinish = (values: any) => {
@@ -141,7 +150,8 @@ export default class CreateTask extends Component<IProps, IState> {
                         </Form.Item>
                         <Form.Item name="toId" label="toId" rules={[{ required: true }]} >
                             <TreeSelect
-                                showSearch
+                                showSearch disabled={this.state.initLoading}
+                                loading={this.state.initLoading}
                                 style={{ width: '100%' }}
                                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                 placeholder="Please select"
